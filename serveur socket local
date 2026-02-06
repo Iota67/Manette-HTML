@@ -1,0 +1,138 @@
+try:
+    import usocket as socket
+except:
+    import socket
+from time import sleep
+import json
+# fichier de configuration externe pour plus de sécurité (utilisation d'un module simple)
+
+
+# sécurisation de la connexion, si ceci n'est pas spécifié, aucun mot de passe n'est demandé lors de la connexion
+
+# démarrage du microcontroleur en tant que point d'accès wifi
+# confirmation de la connexion en console puis affichage des paramètres
+
+
+def web_page():
+
+
+    html = b"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Document</title>
+</head>
+<body id="body">
+<style>
+        body{
+            background-color: #f2f2f2;
+        }
+        #jauge1,#jauge2 {
+            -webkit-appearance: none;
+            transform: rotate(var(--r, -90deg));
+            width: 30vw;
+            height: 4.5vw;
+            background: rgb(230, 207, 188);
+            border-radius: 1.5vw;  
+        }
+
+        #jauge1::-moz-range-thumb,#jauge2::-moz-range-thumb{
+            background-color: rgb(146, 89, 74);
+            height:8vw;
+        }
+
+        #jauge1::-webkit-slider-thumb, #jauge2::-webkit-slider-thumb{
+            -webkit-appearance: none;   
+            appearance: none;
+            background-color: rgb(146, 89, 74);
+            height:8vw;
+            width:1.5vw;
+            border-radius: 1.5vw; 
+        }
+            
+            #slider{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40vw;
+            
+        }
+        #img-background{
+            display: flex;
+            justify-content: center;
+        }
+        #img-background img{
+            height: 52vw;
+            position: absolute;         
+        }  
+    </style>
+
+
+   <div id="img-background"><img src="manette-de-jeu-de-jeux-video.jpg"></div>
+    <div id="slider">
+        <input type="range" min="0" max="1023" step="1" id="jauge1" value="512">
+        <input type="range" min="0" max="1023" step="1" id="jauge2" value="512">
+        <span id="valeur1">0</span>
+        <span id="valeur2">0</span>
+    </div>
+
+<script>
+    const jauge1 = document.getElementById("jauge1");
+    const jauge2 = document.getElementById("jauge2");
+    const valeur1 = document.getElementById("valeur1");
+    const valeur2 = document.getElementById("valeur2");
+    
+    
+    jauge1.addEventListener("input", () => {
+        valeur1.textContent = jauge1.value;
+    });
+
+    jauge2.addEventListener("input", () => {
+        valeur2.textContent = jauge2.value;
+    });
+
+    setInterval(() => {
+        fetch("/speed?speed1=" + jauge1.value + "&speed2=" + jauge2.value);
+    }, 100);
+</script>       
+          
+</body>
+</html>"""
+
+    return html
+
+
+# Fonction définissant la page web affichée sur le serveur
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 80))
+s.listen(1)
+
+speed1 = 500
+speed2 = 500
+
+print("l'ip de la page est : " + socket.gethostbyname(socket.gethostname()))
+
+while True:  # boucle infinie
+    conn, addr = s.accept()
+    print('Got a connection from %s' % str(addr))
+    request = conn.recv(1024)
+    if not request:
+        continue
+    if b'/speed' in request:
+        try:
+            request_str = request.decode()
+            params_str = request_str.split(' ')[1].split('?')[1]
+            params = dict(param.split('=') for param in params_str.split('&'))
+            speed1 = int(params.get('speed1', 500))
+            speed2 = int(params.get('speed2', 500))
+        except Exception as e:
+            print("Error parsing parameters:", e)
+        conn.send(b"HTTP/1.1 200 OK\r\n\r\nOK")
+    else:
+        conn.send(b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n")
+        conn.sendall(web_page())
+    conn.close()
+
