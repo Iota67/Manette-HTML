@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body id="body">
+<style>
+        body{
+            background-color: #f2f2f2;
+        }
+
+        #slider{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 1000px;
+        }
+
+        #jauge1 {
+            appearance: none;
+            transform: rotate(-90deg);
+            width: 1500px;
+            height: 100px;
+            background: rgb(230, 207, 188);
+            border-radius: 1.5vw; 
+            position: relative;
+            z-index: 1;
+            
+        }
+
+        #jauge2{
+            appearance: none;
+            transform: rotate(-90deg);
+            width: 1500px;
+            height: 100px;
+            background: rgb(230, 207, 188);
+            border-radius: 1.5vw; 
+            position: relative;
+            z-index: 1;
+        }
+
+      
+        #jauge1::-moz-range-thumb,#jauge2::-moz-range-thumb{
+            background-color: rgb(146, 89, 74);
+            height:300px;
+            position: relative;
+            z-index: 3;
+        }
+
+        #jauge1::-webkit-slider-thumb, #jauge2::-webkit-slider-thumb{   
+            appearance: none;
+            background-color: rgb(146, 89, 74);
+            height:8vw*0.5;
+            width:1.5vw;
+            border-radius: 1.5vw; 
+            position: relative;
+            z-index: 3;
+        }
+            
+
+       #indicator1, #indicator2{ 
+            position: absolute;
+       }
+
+        #indicator1{
+            left: 44vw;
+            bottom: 27vw;
+            font-size: 3vw;
+            
+        }
+
+        #indicator2{
+            bottom: 27vw*0.5;
+            right: 22vw;
+            font-size: 3vw*0.5;
+        }
+        
+      
+        
+    </style>
+
+
+   
+    <div id="slider">
+            <input type="range" min="0" max="1023" step="1" id="jauge1" >
+            <input type="range" min="0" max="1023" step="1" id="jauge2" >
+    </div>
+    <div id="indicator1"></div>
+    <div id="indicator2"></div>
+
+<script>
+        const jauge1 = document.getElementById("jauge1");
+        const jauge2 = document.getElementById("jauge2");
+        const indicator1 = document.getElementById("indicator1");
+        const indicator2 = document.getElementById("indicator2");
+        
+
+    function indicateur1() {
+        if (jauge1.value < 462) {
+            indicator1.textContent = "↓";
+        } 
+        else if (jauge1.value > 562) {
+            indicator1.textContent = "↑";
+        }
+        else {
+            indicator1.textContent = "🛑";
+        }
+    }
+
+     function indicateur2() {
+        if (jauge2.value < 462) {
+            indicator2.textContent = "↓";
+        } 
+        else if (jauge2.value > 562) {
+            indicator2.textContent = "↑";
+        }
+        else {
+            indicator2.textContent = "🛑";
+        }
+    }
+    indicateur1();
+    jauge1.addEventListener("input", indicateur1);
+    indicateur2();
+    jauge2.addEventListener("input", indicateur2);
+    
+</script>       
+          
+</body>
+</html>
